@@ -2,18 +2,14 @@ package ts.juniors.rebook.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
-@Table(name= "users")
-@Getter
-@Setter
+@Table(name= "usuarios")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class Usuario {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private long id;

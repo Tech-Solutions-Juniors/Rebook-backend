@@ -1,4 +1,4 @@
-CREATE TABLE Users (
+CREATE TABLE Usuario (
                        id BIGSERIAL NOT NULL,
                        nome varchar(50) DEFAULT NULL,
                        email varchar(30) NOT NULL,
