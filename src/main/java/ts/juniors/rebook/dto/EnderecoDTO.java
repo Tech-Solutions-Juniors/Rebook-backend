@@ -1,9 +1,8 @@
 package ts.juniors.rebook.dto;
 import lombok.*;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter
+@Setter
 public class EnderecoDTO {
     private Long id;
     private String rua;

@@ -1,67 +1,67 @@
 package ts.juniors.rebook.controller;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 import ts.juniors.rebook.dto.EnderecoDTO;
-import ts.juniors.rebook.mapper.EnderecoMapper;
 import ts.juniors.rebook.model.Endereco;
 import ts.juniors.rebook.service.EnderecoService;
+
+import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
-import static ts.juniors.rebook.mapper.EnderecoMapper.convertToDTO;
-import static ts.juniors.rebook.mapper.EnderecoMapper.convertToEntity;
+
 
 @RestController
-@RequestMapping("/v1/enderecos")
+@RequestMapping("/Endereco")
 public class EnderecoController {
+
     @Autowired
-    private EnderecoService enderecoService;
+    private EnderecoService service;
+
+    @GetMapping
+    public Page<EnderecoDTO> listarEnderecos(@PageableDefault(size = 10) Pageable paginacao) {
+        return service.getTodosEnderecos(paginacao);
+    }
 
     @GetMapping("/{id}")
-    public EnderecoDTO getEndereco(@PathVariable Long id) {
-        Endereco endereco = enderecoService.findById(id);
-        return convertToDTO(endereco);
+    public ResponseEntity<EnderecoDTO> detalharEnderecoPorId(@PathVariable @NotNull Long id) {
+        EnderecoDTO dto = service.getPorId(id);
+        return ResponseEntity.ok(dto);
     }
 
     @PostMapping
-    public EnderecoDTO createEndereco(@RequestBody EnderecoDTO enderecoDTO) {
-        Endereco endereco = convertToEntity(enderecoDTO);
-        Endereco savedEndereco = enderecoService.save(endereco);
-        return convertToDTO(savedEndereco);
+    public ResponseEntity<EnderecoDTO> cadastrarEndereco(@RequestBody @Valid EnderecoDTO dto, UriComponentsBuilder uriBuilder) {
+        EnderecoDTO endereco = service.postEndereco(dto);
+        URI uri = uriBuilder.path("/Endereco/{id}").buildAndExpand(endereco.getId()).toUri();
+
+        return ResponseEntity.created(uri).body(endereco);
     }
 
     @PutMapping("/{id}")
-    public EnderecoDTO updateEndereco(@PathVariable Long id, @RequestBody EnderecoDTO enderecoDTO) {
-        Endereco endereco = convertToEntity(enderecoDTO);
-        Endereco updateEndereco = enderecoService.update(id, endereco);
-        return convertToDTO(updateEndereco);
-
+    public ResponseEntity<EnderecoDTO> atualizarEndereco(@PathVariable @NotNull Long id, @RequestBody @Valid EnderecoDTO dto) {
+        EnderecoDTO atualizado = service.putEndereco(id, dto);
+        return ResponseEntity.ok(atualizado);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteEndereco(@PathVariable Long id) {
-        enderecoService.deleteById(id);
-    }
-
-
-    @GetMapping("/v1/enderecos")
-    public List<EnderecoDTO> getAllEnderecos() {
-        return enderecoService.findAll().stream()
-                .map(EnderecoMapper::convertToDTO)
-                .collect(Collectors.toList());
+    public ResponseEntity<EnderecoDTO> removerDeletar(@PathVariable @NotNull Long id) {
+        service.deleteEndereco(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/cidade/{cidade}")
-    public List<EnderecoDTO> getEnderecosByCidade(@PathVariable String cidade) {
-        return enderecoService.findByCidade(cidade).stream()
-                .map(EnderecoMapper::convertToDTO)
-                .collect(Collectors.toList());
+    public List<Endereco> getEnderecosByCidade(@PathVariable String cidade) {
+        return service.getPorCidade(cidade);
     }
 
     @GetMapping("/estado/{estado}")
-    public List<EnderecoDTO> getEnderecosByEstado(@PathVariable String estado) {
-        return enderecoService.findByEstado(estado).stream()
-                .map(EnderecoMapper::convertToDTO)
-                .collect(Collectors.toList());
+    public List<Endereco> getEnderecosByEstado(@PathVariable String estado) {
+        return service.getPorEstado(estado);
     }
 
 

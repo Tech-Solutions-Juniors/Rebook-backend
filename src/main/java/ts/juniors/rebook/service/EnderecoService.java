@@ -1,65 +1,66 @@
 package ts.juniors.rebook.service;
+import jakarta.persistence.EntityNotFoundException;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import ts.juniors.rebook.dto.EnderecoDTO;
 import ts.juniors.rebook.model.Endereco;
+
 import ts.juniors.rebook.repository.EnderecoReposiotry;
+
 
 import java.util.List;
 
 @Service
-public class EnderecoService implements EnderecoServiceInterface {
+public class EnderecoService {
+
     @Autowired
-    private EnderecoReposiotry enderecoRepository;
-    private Long id;
-    private Endereco newEndereco;
+    private EnderecoReposiotry repository;
 
-    @Override
-    public Endereco save(Endereco endereco) {
-        return enderecoRepository.save(endereco);
+    @Autowired
+    private ModelMapper modelMapper;
+
+    public Page<EnderecoDTO> getTodosEnderecos(Pageable paginacao) {
+        return repository
+                .findAll(paginacao)
+                .map(p -> modelMapper.map(p, EnderecoDTO.class));
     }
 
-    @Override
-    public Endereco findById(Long id) {
-        return enderecoRepository.findById(id).orElse(null);
-    }
+    public EnderecoDTO getPorId(Long id) {
+        Endereco endereco = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException());
 
-    @Override
-    public List<Endereco> findAll() {
-        return enderecoRepository.findAll();
-    }
-
-    @Override
-    public Endereco update(Long id, Endereco newEndereco) {
-        return enderecoRepository.findById(id)
-                .map(endereco -> {
-                    atualizarEndereco(endereco, newEndereco);
-                    return enderecoRepository.save(endereco);
-                }).orElse(null);
-    }
-
-    private void atualizarEndereco(Endereco enderecoExistente, Endereco novoEndereco) {
-        enderecoExistente.setRua(novoEndereco.getRua());
-        enderecoExistente.setCidade(novoEndereco.getCidade());
-        enderecoExistente.setEstado(novoEndereco.getEstado());
-        enderecoExistente.setNumero(novoEndereco.getNumero());
-        enderecoExistente.setCep(novoEndereco.getCep());
-    }
-
-    @Override
-    public void deleteById(Long id) {
-        enderecoRepository.deleteById(id);
-    }
-
-    @Override
-    public List<Endereco> findByCidade(String cidade) {
-        return enderecoRepository.findByCidade(cidade);
-    }
-
-    @Override
-    public List<Endereco> findByEstado(String estado) {
-        return enderecoRepository.findByEstado(estado);
+        return modelMapper.map(endereco, EnderecoDTO.class);
     }
 
 
+    public List<Endereco> getPorCidade(String cidade) {
+        return repository.findByCidade(cidade);
+    }
 
+
+    public List<Endereco> getPorEstado(String estado) {
+        return repository.findByEstado(estado);
+    }
+
+
+    public EnderecoDTO postEndereco(EnderecoDTO dto) {
+        Endereco endereco = modelMapper.map(dto, Endereco.class);
+        repository.save(endereco);
+        return modelMapper.map(endereco, EnderecoDTO.class);
+    }
+
+    public EnderecoDTO putEndereco(Long id, EnderecoDTO dto) {
+        Endereco endereco = modelMapper.map(dto, Endereco.class);
+        endereco.setId(id);
+        endereco = repository.save(endereco);
+        return modelMapper.map(endereco, EnderecoDTO.class);
+    }
+
+    public void deleteEndereco(Long id) {
+        repository.deleteById(id);
+    }
 }
