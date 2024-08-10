@@ -3,6 +3,8 @@ package ts.juniors.rebook.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name= "Usuario")
@@ -27,5 +29,7 @@ public class Usuario {
     @Column(name = "senha", nullable = false)
     private String senha;
 
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Livro> livros = new ArrayList<>();
 
 }
