@@ -4,16 +4,16 @@ package ts.juniors.rebook.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ts.juniors.rebook.enums.Estados;
 import ts.juniors.rebook.enums.Generos;
 import java.util.List;
+import java.util.Set;
 
 @Entity
-@Table(name= "Livro")
-@Data
+@Table(name= "livro")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Livro {
@@ -49,13 +49,17 @@ public class Livro {
     @CollectionTable(name = "Livro_Imagens", joinColumns = @JoinColumn(name = "livro_id"))
     @Column(name = "imagem_url")
     @Size(max = 3, message = "Você pode adicionar no máximo 3 imagens")
-    private List<String> imagemUrls;
+    private Set<String> imagemUrls;
 
     @NotBlank
     @Column(name = "autor", nullable = false)
     private String autor;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuario_id")
+    @ManyToOne
+    @JoinTable(
+            name = "usuario_id_livro_id",
+            joinColumns = @JoinColumn(name = "livro_id"),
+            inverseJoinColumns = @JoinColumn(name = "usuario_id")
+    )
     private Usuario usuario;
 }

@@ -4,11 +4,14 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
-@Table(name= "Usuario")
-@Data
+@Table(name= "usuario")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Usuario {
@@ -29,7 +32,19 @@ public class Usuario {
     @Column(name = "senha", nullable = false)
     private String senha;
 
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Livro> livros = new ArrayList<>();
+    @OneToMany
+    @JoinTable(
+            name = "usuario_id_livro_id",
+            joinColumns = @JoinColumn(name = "usuario_id"),
+            inverseJoinColumns = @JoinColumn(name = "livro_id")
+    )
+    private Set<Livro> livros = new HashSet<>();
 
+    @OneToMany
+    @JoinTable(
+            name = "usuario_id_endereco_id",
+            joinColumns = @JoinColumn(name = "usuario_id"),
+            inverseJoinColumns = @JoinColumn(name = "endereco_id")
+    )
+    private Set<Endereco> enderecos = new HashSet<>();
 }

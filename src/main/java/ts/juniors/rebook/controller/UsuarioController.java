@@ -16,7 +16,7 @@ import java.net.URI;
 
 
 @RestController
-@RequestMapping("/Usuario")
+@RequestMapping("/usuario")
 public class UsuarioController {
 
     @Autowired
@@ -36,7 +36,7 @@ public class UsuarioController {
     @PostMapping
     public ResponseEntity<UsuarioDto> cadastrarUsuario(@RequestBody @Valid UsuarioDto dto, UriComponentsBuilder uriBuilder) {
         UsuarioDto usuario = service.PostUsuario(dto);
-        URI uri = uriBuilder.path("/Usuario/{id}").buildAndExpand(usuario.getId()).toUri();
+        URI uri = uriBuilder.path("/usuario/{id}").buildAndExpand(usuario.getId()).toUri();
 
 
 

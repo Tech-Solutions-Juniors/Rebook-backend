@@ -1,13 +1,12 @@
 package ts.juniors.rebook.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
-@Data
-@Table(name = "ENDERECO")
+@Getter
+@Setter
+@Table(name = "endereco")
 @NoArgsConstructor
 @AllArgsConstructor
 public class Endereco {
@@ -34,4 +33,11 @@ public class Endereco {
     private String complemento;
 
 
+    @ManyToOne
+    @JoinTable(
+            name = "usuario_id_endereco_id",
+            joinColumns = @JoinColumn(name = "endereco_id"),
+            inverseJoinColumns = @JoinColumn(name = "usuario_id")
+    )
+    private Usuario usuario;
 }

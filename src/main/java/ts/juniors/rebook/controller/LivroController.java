@@ -15,7 +15,7 @@ import ts.juniors.rebook.service.LivroService;
 import java.net.URI;
 
 @RestController
-@RequestMapping("/Livro")
+@RequestMapping("/livro")
 public class LivroController {
 
     @Autowired
@@ -35,7 +35,7 @@ public class LivroController {
     @PostMapping
     public ResponseEntity<LivroDto> cadastrarLivro(@RequestBody @Valid LivroDto dto, UriComponentsBuilder uriBuilder) {
         LivroDto livro = service.PostLivro(dto);
-        URI uri = uriBuilder.path("/Livro/{id}").buildAndExpand(livro.getId()).toUri();
+        URI uri = uriBuilder.path("/livro/{id}").buildAndExpand(livro.getId()).toUri();
 
         return ResponseEntity.created(uri).body(livro);
     }
