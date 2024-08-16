@@ -32,19 +32,9 @@ public class Usuario {
     @Column(name = "senha", nullable = false)
     private String senha;
 
-    @OneToMany
-    @JoinTable(
-            name = "usuario_id_livro_id",
-            joinColumns = @JoinColumn(name = "usuario_id"),
-            inverseJoinColumns = @JoinColumn(name = "livro_id")
-    )
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Livro> livros = new HashSet<>();
 
-    @OneToMany
-    @JoinTable(
-            name = "usuario_id_endereco_id",
-            joinColumns = @JoinColumn(name = "usuario_id"),
-            inverseJoinColumns = @JoinColumn(name = "endereco_id")
-    )
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Endereco> enderecos = new HashSet<>();
 }

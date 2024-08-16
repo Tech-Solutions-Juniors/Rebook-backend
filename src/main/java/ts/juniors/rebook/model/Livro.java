@@ -56,10 +56,6 @@ public class Livro {
     private String autor;
 
     @ManyToOne
-    @JoinTable(
-            name = "usuario_id_livro_id",
-            joinColumns = @JoinColumn(name = "livro_id"),
-            inverseJoinColumns = @JoinColumn(name = "usuario_id")
-    )
+    @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 }

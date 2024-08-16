@@ -18,13 +18,7 @@ CREATE TABLE livro (
                        PRIMARY KEY (id),
                        FOREIGN KEY (usuario_id) REFERENCES Usuario(id)
 );
-CREATE TABLE usuario_id_livro_id (
-                                     usuario_id BIGINT NOT NULL,
-                                     livro_id BIGINT NOT NULL,
-                                     PRIMARY KEY (usuario_id, livro_id),
-                                     FOREIGN KEY (usuario_id) REFERENCES usuario(id),
-                                     FOREIGN KEY (livro_id) REFERENCES livro(id)
-);
+
 CREATE TABLE livro_generos (
                                livro_id BIGINT NOT NULL,
                                genero VARCHAR(50) NOT NULL,
@@ -50,10 +44,4 @@ CREATE TABLE endereco (
                           FOREIGN KEY (usuario_id) REFERENCES Usuario(id)
 );
 
-CREATE TABLE usuario_id_endereco_id (
-                                     usuario_id BIGINT NOT NULL,
-                                     endereco_id BIGINT NOT NULL,
-                                     PRIMARY KEY (usuario_id, endereco_id),
-                                     FOREIGN KEY (usuario_id) REFERENCES usuario(id),
-                                     FOREIGN KEY (endereco_id) REFERENCES endereco(id)
-);
+

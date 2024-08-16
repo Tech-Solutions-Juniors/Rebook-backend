@@ -34,10 +34,6 @@ public class Endereco {
 
 
     @ManyToOne
-    @JoinTable(
-            name = "usuario_id_endereco_id",
-            joinColumns = @JoinColumn(name = "endereco_id"),
-            inverseJoinColumns = @JoinColumn(name = "usuario_id")
-    )
+    @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 }
