@@ -23,12 +23,12 @@ public class Usuario {
     @Column(name = "nome", nullable = false)
     private String nome;
 
-    @NotNull
+    @NotBlank
     @Email
     @Column(name = "email", unique = true, nullable = false)
     private String email;
 
-    @NotNull
+    @NotBlank
     @Column(name = "senha", nullable = false)
     private String senha;
 

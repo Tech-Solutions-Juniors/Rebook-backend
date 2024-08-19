@@ -4,8 +4,10 @@ import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.data.domain.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import ts.juniors.rebook.dto.UsuarioDto;
+import ts.juniors.rebook.dto.UsuarioInsertDto;
 import ts.juniors.rebook.model.Usuario;
 import ts.juniors.rebook.repository.UsuarioRepository;
 
@@ -14,7 +16,8 @@ public class UsuarioService {
 
     @Autowired
     private UsuarioRepository repository;
-
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
     @Autowired
     private ModelMapper modelMapper;
 
@@ -31,10 +34,12 @@ public class UsuarioService {
         return modelMapper.map(usuario, UsuarioDto.class);
     }
 
-    public UsuarioDto PostUsuario(UsuarioDto dto) {
+    public UsuarioInsertDto PostUsuario(UsuarioInsertDto dto) {
+
         Usuario usuario = modelMapper.map(dto, Usuario.class);
+        usuario.setSenha(passwordEncoder.encode(dto.getSenha()));
         repository.save(usuario);
-        return modelMapper.map(usuario, UsuarioDto.class);
+        return modelMapper.map(usuario, UsuarioInsertDto.class);
     }
 
     public UsuarioDto PutUsuario(Long id, UsuarioDto dto) {
