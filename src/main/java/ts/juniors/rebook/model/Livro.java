@@ -1,22 +1,23 @@
 package ts.juniors.rebook.model;
 
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ts.juniors.rebook.enums.Estados;
 import ts.juniors.rebook.enums.Generos;
+
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
-@Table(name= "Livro")
-@Data
+@Table(name= "livro")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Livro {
+public class Livro  {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -58,4 +59,7 @@ public class Livro {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
+
+    @OneToMany(mappedBy = "livro", cascade = CascadeType.ALL,orphanRemoval = true)
+    private Set<Transacao> transacoes = new HashSet<>();
 }
