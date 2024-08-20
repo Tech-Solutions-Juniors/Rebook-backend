@@ -4,14 +4,17 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import java.util.ArrayList;
+<<<<<<< HEAD
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+=======
+import java.util.List;
+>>>>>>> 25c965f (Revert "Criação da entidade Transacao")
 
 @Entity
-@Table(name= "usuario")
-@Getter
-@Setter
+@Table(name= "Usuario")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Usuario {
@@ -33,8 +36,11 @@ public class Usuario {
     private String senha;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Livro> livros = new HashSet<>();
+    private List<Livro> livros = new ArrayList<>();
 
+<<<<<<< HEAD
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Endereco> enderecos = new HashSet<>();
+=======
+>>>>>>> 25c965f (Revert "Criação da entidade Transacao")
 }
