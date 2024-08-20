@@ -3,13 +3,12 @@ package ts.juniors.rebook.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Table(name= "usuario")
-@Getter
-@Setter
+@Table(name= "Usuario")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Usuario {
@@ -31,11 +30,6 @@ public class Usuario {
     private String senha;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Livro> livros = new HashSet<>();
+    private List<Livro> livros = new ArrayList<>();
 
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Endereco> enderecos = new HashSet<>();
-
-    @OneToMany(mappedBy = "usuario",cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Transacao> transacoes = new HashSet<>();
 }
