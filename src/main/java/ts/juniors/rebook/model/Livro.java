@@ -4,18 +4,18 @@ package ts.juniors.rebook.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import ts.juniors.rebook.enums.Estados;
 import ts.juniors.rebook.enums.Generos;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Set;
 
 @Entity
-@Table(name= "livro")
-@Getter
-@Setter
+@Table(name= "Livro")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Livro {
