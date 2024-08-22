@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 import ts.juniors.rebook.dto.UsuarioDto;
+import ts.juniors.rebook.dto.UsuarioInsertDto;
 import ts.juniors.rebook.service.UsuarioService;
 
 import java.net.URI;
@@ -34,8 +35,8 @@ public class UsuarioController {
     }
 
     @PostMapping
-    public ResponseEntity<UsuarioDto> cadastrarUsuario(@RequestBody @Valid UsuarioDto dto, UriComponentsBuilder uriBuilder) {
-        UsuarioDto usuario = service.PostUsuario(dto);
+    public ResponseEntity<UsuarioInsertDto> cadastrarUsuario(@RequestBody @Valid UsuarioInsertDto dto, UriComponentsBuilder uriBuilder) {
+        UsuarioInsertDto usuario = service.PostUsuario(dto);
         URI uri = uriBuilder.path("/usuario/{id}").buildAndExpand(usuario.getId()).toUri();
 
 

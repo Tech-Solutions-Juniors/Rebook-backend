@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ts.juniors.rebook.enums.Estados;
 import ts.juniors.rebook.enums.Generos;
+
+import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
@@ -54,6 +56,10 @@ public class Livro {
     @NotBlank
     @Column(name = "autor", nullable = false)
     private String autor;
+
+    @NotBlank
+    @Column(name = "preco", nullable = false)
+    private BigDecimal preco;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")

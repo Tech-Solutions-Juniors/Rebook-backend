@@ -1,7 +1,7 @@
 CREATE TABLE usuario (
                          id BIGSERIAL NOT NULL,
-                         nome varchar(50) DEFAULT NULL,
-                         email varchar(30) NOT NULL,
+                         nome varchar(50) NOT NULL,
+                         email varchar(30) NOT NULL UNIQUE,
                          senha varchar(100) NOT NULL,
                          PRIMARY KEY (id)
 );
@@ -15,6 +15,7 @@ CREATE TABLE livro (
                        autor VARCHAR(100) NOT NULL,
                        usuario_id BIGINT,
                        imagem_url VARCHAR(255) NOT NULL,
+                       preco decimal(19,2) DEFAULT NULL ,
                        PRIMARY KEY (id),
                        FOREIGN KEY (usuario_id) REFERENCES Usuario(id)
 );
