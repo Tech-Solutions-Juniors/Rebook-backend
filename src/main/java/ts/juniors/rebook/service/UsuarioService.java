@@ -13,8 +13,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import ts.juniors.rebook.dto.UsuarioDto;
 import ts.juniors.rebook.dto.UsuarioInsertDto;
+import ts.juniors.rebook.model.Livro;
 import ts.juniors.rebook.model.Usuario;
 import ts.juniors.rebook.repository.UsuarioRepository;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UsuarioService implements UserDetailsService {
@@ -50,10 +54,26 @@ public class UsuarioService implements UserDetailsService {
     }
 
     public UsuarioDto PutUsuario(Long id, UsuarioDto dto) {
-        Usuario usuario = modelMapper.map(dto, Usuario.class);
-        usuario.setId(id);
-        usuario = repository.save(usuario);
-        return modelMapper.map(usuario, UsuarioDto.class);
+        Usuario usuarioExistente = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
+
+        usuarioExistente.setNome(dto.getNome());
+        usuarioExistente.setEmail(dto.getEmail());
+
+        // Verificar se a lista de livros no dto não é nula
+        if (dto.getLivros() != null) {
+            // Converter List<LivroDto> para List<Livro>
+            List<Livro> livros = dto.getLivros().stream()
+                    .map(livroDto -> modelMapper.map(livroDto, Livro.class))
+                    .collect(Collectors.toList());
+
+            // Atualizar os livros do usuário
+            usuarioExistente.getLivros().clear();
+            usuarioExistente.getLivros().addAll(livros);
+        }
+
+        usuarioExistente = repository.save(usuarioExistente);
+        return modelMapper.map(usuarioExistente, UsuarioDto.class);
     }
 
     public void DeleteUsuario(Long id) {
