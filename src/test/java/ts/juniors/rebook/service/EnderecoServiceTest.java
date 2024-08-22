@@ -1,17 +1,10 @@
 package ts.juniors.rebook.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import ts.juniors.rebook.dto.EnderecoDTO;
 import ts.juniors.rebook.model.Endereco;
 import ts.juniors.rebook.repository.EnderecoReposiotry;
 
@@ -19,154 +12,128 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class EnderecoServiceTest {
 
     @Mock
-    private EnderecoReposiotry repository;
-
-    @Mock
-    private ModelMapper modelMapper;
+    private EnderecoReposiotry enderecoRepository;
 
     @InjectMocks
     private EnderecoService enderecoService;
 
+    private Endereco endereco;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        endereco = new Endereco();
+        endereco.setId(1L);
+        endereco.setRua("Rua A");
+        endereco.setCidade("Cidade B");
+        endereco.setEstado("Estado C");
+        endereco.setCep("12345-678");
+        endereco.setNumero("100");
     }
 
     @Test
-    void getTodosEnderecos_ShouldReturnEnderecoDTOPage() {
+    void testSaveEndereco() {
+        when(enderecoRepository.save(any(Endereco.class))).thenReturn(endereco);
 
-        Pageable pageable = PageRequest.of(0, 10);
-        Endereco endereco = new Endereco();
-        EnderecoDTO enderecoDTO = new EnderecoDTO();
-        Page<Endereco> enderecoPage = new PageImpl<>(List.of(endereco));
-        when(repository.findAll(pageable)).thenReturn(enderecoPage);
-        when(modelMapper.map(any(Endereco.class), eq(EnderecoDTO.class))).thenReturn(enderecoDTO);
+        Endereco savedEndereco = enderecoService.save(endereco);
 
-
-        Page<EnderecoDTO> result = enderecoService.getTodosEnderecos(pageable);
-
-
-        assertThat(result.getContent()).hasSize(1);
-        verify(repository, times(1)).findAll(pageable);
-        verify(modelMapper, times(1)).map(endereco, EnderecoDTO.class);
+        assertNotNull(savedEndereco);
+        assertEquals("Rua A", savedEndereco.getRua());
+        verify(enderecoRepository, times(1)).save(any(Endereco.class));
     }
 
     @Test
-    void getPorId_ShouldReturnEnderecoDTO_WhenEnderecoExists() {
+    void testFindById() {
+        when(enderecoRepository.findById(1L)).thenReturn(Optional.of(endereco));
 
-        Long id = 1L;
-        Endereco endereco = new Endereco();
-        EnderecoDTO enderecoDTO = new EnderecoDTO();
-        when(repository.findById(id)).thenReturn(Optional.of(endereco));
-        when(modelMapper.map(endereco, EnderecoDTO.class)).thenReturn(enderecoDTO);
+        Endereco foundEndereco = enderecoService.findById(1L);
 
-
-        EnderecoDTO result = enderecoService.getPorId(id);
-
-
-        assertThat(result).isNotNull();
-        verify(repository, times(1)).findById(id);
-        verify(modelMapper, times(1)).map(endereco, EnderecoDTO.class);
+        assertNotNull(foundEndereco);
+        assertEquals("Cidade B", foundEndereco.getCidade());
+        verify(enderecoRepository, times(1)).findById(1L);
     }
 
     @Test
-    void getPorId_ShouldThrowEntityNotFoundException_WhenEnderecoDoesNotExist() {
+    void testFindAll() {
+        when(enderecoRepository.findAll()).thenReturn(Arrays.asList(endereco));
 
-        Long id = 1L;
-        when(repository.findById(id)).thenReturn(Optional.empty());
+        List<Endereco> enderecos = enderecoService.findAll();
 
-
-        assertThrows(EntityNotFoundException.class, () -> enderecoService.getPorId(id));
-        verify(repository, times(1)).findById(id);
+        assertNotNull(enderecos);
+        assertFalse(enderecos.isEmpty());
+        assertEquals(1, enderecos.size());
+        verify(enderecoRepository, times(1)).findAll();
     }
 
     @Test
-    void getPorCidade_ShouldReturnEnderecoList() {
+    void testUpdateEndereco() {
+        Endereco newEndereco = new Endereco();
+        newEndereco.setRua("Rua Nova");
 
-        String cidade = "São Paulo";
-        List<Endereco> enderecos = Arrays.asList(new Endereco(), new Endereco());
-        when(repository.findByCidade(cidade)).thenReturn(enderecos);
+        when(enderecoRepository.findById(1L)).thenReturn(Optional.of(endereco));
+        when(enderecoRepository.save(any(Endereco.class))).thenReturn(endereco);
 
+        Endereco updatedEndereco = enderecoService.update(1L, newEndereco);
 
-        List<Endereco> result = enderecoService.getPorCidade(cidade);
-
-
-        assertThat(result).hasSize(2);
-        verify(repository, times(1)).findByCidade(cidade);
+        assertNotNull(updatedEndereco);
+        assertEquals("Rua Nova", updatedEndereco.getRua());
+        verify(enderecoRepository, times(1)).findById(1L);
+        verify(enderecoRepository, times(1)).save(any(Endereco.class));
     }
 
     @Test
-    void getPorEstado_ShouldReturnEnderecoList() {
+    void testDeleteById() {
+        doNothing().when(enderecoRepository).deleteById(1L);
 
-        String estado = "SP";
-        List<Endereco> enderecos = Arrays.asList(new Endereco(), new Endereco());
-        when(repository.findByEstado(estado)).thenReturn(enderecos);
+        enderecoService.deleteById(1L);
 
+        verify(enderecoRepository, times(1)).deleteById(1L);
+    }
+    @Test
+    void testFindByCidade() {
+        Endereco endereco1 = new Endereco();
+        endereco1.setCidade("Cidade X");
 
-        List<Endereco> result = enderecoService.getPorEstado(estado);
+        Endereco endereco2 = new Endereco();
+        endereco2.setCidade("Cidade X");
 
+        List<Endereco> enderecos = Arrays.asList(endereco1, endereco2);
 
-        assertThat(result).hasSize(2);
-        verify(repository, times(1)).findByEstado(estado);
+        when(enderecoRepository.findByCidade("Cidade X")).thenReturn(enderecos);
+
+        List<Endereco> result = enderecoService.findByCidade("Cidade X");
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals("Cidade X", result.get(0).getCidade());
+        assertEquals("Cidade X", result.get(1).getCidade());
+        verify(enderecoRepository, times(1)).findByCidade("Cidade X");
     }
 
     @Test
-    void postEndereco_ShouldSaveAndReturnEnderecoDTO() {
+    void testFindByEstado() {
+        Endereco endereco1 = new Endereco();
+        endereco1.setEstado("Estado Y");
 
-        EnderecoDTO enderecoDTO = new EnderecoDTO();
-        Endereco endereco = new Endereco();
-        when(modelMapper.map(enderecoDTO, Endereco.class)).thenReturn(endereco);
-        when(repository.save(endereco)).thenReturn(endereco);
-        when(modelMapper.map(endereco, EnderecoDTO.class)).thenReturn(enderecoDTO);
+        Endereco endereco2 = new Endereco();
+        endereco2.setEstado("Estado Y");
 
+        List<Endereco> enderecos = Arrays.asList(endereco1, endereco2);
 
-        EnderecoDTO result = enderecoService.postEndereco(enderecoDTO);
+        when(enderecoRepository.findByEstado("Estado Y")).thenReturn(enderecos);
 
+        List<Endereco> result = enderecoService.findByEstado("Estado Y");
 
-        assertThat(result).isNotNull();
-        verify(repository, times(1)).save(endereco);
-        verify(modelMapper, times(1)).map(enderecoDTO, Endereco.class);
-        verify(modelMapper, times(1)).map(endereco, EnderecoDTO.class);
-    }
-
-    @Test
-    void putEndereco_ShouldUpdateAndReturnEnderecoDTO() {
-
-        Long id = 1L;
-        EnderecoDTO enderecoDTO = new EnderecoDTO();
-        Endereco endereco = new Endereco();
-        when(modelMapper.map(enderecoDTO, Endereco.class)).thenReturn(endereco);
-        when(repository.save(endereco)).thenReturn(endereco);
-        when(modelMapper.map(endereco, EnderecoDTO.class)).thenReturn(enderecoDTO);
-
-
-        EnderecoDTO result = enderecoService.putEndereco(id, enderecoDTO);
-
-
-        assertThat(result).isNotNull();
-        assertThat(endereco.getId()).isEqualTo(id);
-        verify(repository, times(1)).save(endereco);
-        verify(modelMapper, times(1)).map(enderecoDTO, Endereco.class);
-        verify(modelMapper, times(1)).map(endereco, EnderecoDTO.class);
-    }
-
-    @Test
-    void deleteEndereco_ShouldCallRepositoryDeleteById() {
-
-        Long id = 1L;
-
-
-        enderecoService.deleteEndereco(id);
-
-
-        verify(repository, times(1)).deleteById(id);
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals("Estado Y", result.get(0).getEstado());
+        assertEquals("Estado Y", result.get(1).getEstado());
+        verify(enderecoRepository, times(1)).findByEstado("Estado Y");
     }
 }

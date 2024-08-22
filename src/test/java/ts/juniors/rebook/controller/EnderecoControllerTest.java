@@ -1,114 +1,122 @@
 package ts.juniors.rebook.controller;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
+import org.mockito.junit.jupiter.MockitoExtension;
 import ts.juniors.rebook.dto.EnderecoDTO;
 import ts.juniors.rebook.model.Endereco;
 import ts.juniors.rebook.service.EnderecoService;
-
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.Mockito.*;
 
-@WebMvcTest(EnderecoController.class)
+@ExtendWith(MockitoExtension.class)
 public class EnderecoControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean
+    @Mock
     private EnderecoService enderecoService;
 
-    @Test
-    public void testListarEnderecos() throws Exception {
-        Page<EnderecoDTO> enderecos = new PageImpl<>(Arrays.asList(new EnderecoDTO(), new EnderecoDTO()));
-        when(enderecoService.getTodosEnderecos(any(PageRequest.class))).thenReturn(enderecos);
+    @InjectMocks
+    private EnderecoController enderecoController;
 
-        mockMvc.perform(get("/Endereco")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").isArray())
-                .andExpect(jsonPath("$.content.length()").value(2));
+    @Test
+    public void testGetEndereco() {
+        Endereco endereco = new Endereco();
+        endereco.setId(1L);
+        endereco.setRua("Rua A");
+
+        when(enderecoService.findById(1L)).thenReturn(endereco);
+
+        EnderecoDTO result = enderecoController.getEndereco(1L);
+
+        assertEquals("Rua A", result.getRua());
+        verify(enderecoService, times(1)).findById(1L);
     }
 
     @Test
-    public void testDetalharEnderecoPorId() throws Exception {
+    public void testCreateEndereco() {
+        Endereco endereco = new Endereco();
+        endereco.setRua("Rua B");
+
+        when(enderecoService.save(any(Endereco.class))).thenReturn(endereco);
+
         EnderecoDTO enderecoDTO = new EnderecoDTO();
-        when(enderecoService.getPorId(anyLong())).thenReturn(enderecoDTO);
+        enderecoDTO.setRua("Rua B");
 
-        mockMvc.perform(get("/Endereco/{id}", 1L)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").doesNotExist());  // Assuming the DTO doesn't have an ID field in the example
+        EnderecoDTO result = enderecoController.createEndereco(enderecoDTO);
+
+        assertEquals("Rua B", result.getRua());
+        verify(enderecoService, times(1)).save(any(Endereco.class));
     }
 
     @Test
-    public void testCadastrarEndereco() throws Exception {
+    public void testUpdateEndereco() {
+        Endereco endereco = new Endereco();
+        endereco.setRua("Rua C");
+
+        when(enderecoService.update(anyLong(), any(Endereco.class))).thenReturn(endereco);
+
         EnderecoDTO enderecoDTO = new EnderecoDTO();
-        when(enderecoService.postEndereco(any(EnderecoDTO.class))).thenReturn(enderecoDTO);
+        enderecoDTO.setRua("Rua C");
 
-        mockMvc.perform(post("/Endereco")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{ \"titulo\": \"Endereco Teste\" }"))
-                .andExpect(status().isCreated());
+        EnderecoDTO result = enderecoController.updateEndereco(1L, enderecoDTO);
+
+        assertEquals("Rua C", result.getRua());
+        verify(enderecoService, times(1)).update(anyLong(), any(Endereco.class));
     }
 
     @Test
-    public void testAtualizarEndereco() throws Exception {
-        EnderecoDTO enderecoDTO = new EnderecoDTO();
-        when(enderecoService.putEndereco(anyLong(), any(EnderecoDTO.class))).thenReturn(enderecoDTO);
+    public void testDeleteEndereco() {
+        doNothing().when(enderecoService).deleteById(1L);
 
-        mockMvc.perform(put("/Endereco/{id}", 1L)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{ \"titulo\": \"Endereco Teste Atualizado\" }"))
-                .andExpect(status().isOk());
+        enderecoController.deleteEndereco(1L);
+
+        verify(enderecoService, times(1)).deleteById(1L);
     }
 
     @Test
-    public void testRemoverDeletar() throws Exception {
-        mockMvc.perform(delete("/Endereco/{id}", 1L)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNoContent());
+    public void testGetAllEnderecos() {
+        Endereco endereco = new Endereco();
+        endereco.setRua("Rua D");
+
+        when(enderecoService.findAll()).thenReturn(Collections.singletonList(endereco));
+
+        List<EnderecoDTO> result = enderecoController.getAllEnderecos();
+
+        assertEquals(1, result.size());
+        assertEquals("Rua D", result.get(0).getRua());
+        verify(enderecoService, times(1)).findAll();
     }
 
     @Test
-    public void testGetEnderecosByCidade() throws Exception {
-        List<Endereco> enderecos = Arrays.asList(new Endereco(), new Endereco());
-        when(enderecoService.getPorCidade(anyString())).thenReturn(enderecos);
+    public void testGetEnderecosByCidade() {
+        Endereco endereco = new Endereco();
+        endereco.setCidade("Cidade A");
 
-        mockMvc.perform(get("/Endereco/cidade/{cidade}", "São Paulo")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2));
+        when(enderecoService.findByCidade("Cidade A")).thenReturn(Collections.singletonList(endereco));
+
+        List<EnderecoDTO> result = enderecoController.getEnderecosByCidade("Cidade A");
+
+        assertEquals(1, result.size());
+        assertEquals("Cidade A", result.get(0).getCidade());
+        verify(enderecoService, times(1)).findByCidade("Cidade A");
     }
 
     @Test
-    public void testGetEnderecosByEstado() throws Exception {
-        List<Endereco> enderecos = Arrays.asList(new Endereco(), new Endereco());
-        when(enderecoService.getPorEstado(anyString())).thenReturn(enderecos);
+    public void testGetEnderecosByEstado() {
+        Endereco endereco = new Endereco();
+        endereco.setEstado("Estado B");
 
-        mockMvc.perform(get("/Endereco/estado/{estado}", "SP")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2));
+        when(enderecoService.findByEstado("Estado B")).thenReturn(Collections.singletonList(endereco));
+
+        List<EnderecoDTO> result = enderecoController.getEnderecosByEstado("Estado B");
+
+        assertEquals(1, result.size());
+        assertEquals("Estado B", result.get(0).getEstado());
+        verify(enderecoService, times(1)).findByEstado("Estado B");
     }
 }

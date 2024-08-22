@@ -34,10 +34,13 @@ public class UsuarioController {
     }
 
     @PostMapping
-    public ResponseEntity<UsuarioDto> cadastrarUsuario(@RequestBody UsuarioDto dto, UriComponentsBuilder uriBuilder) {
-        UsuarioDto usuarioDto = service.PostUsuario(dto);
-        URI location = uriBuilder.path("/Usuario/{id}").buildAndExpand(usuarioDto.getId()).toUri();
-        return ResponseEntity.created(location).body(usuarioDto);
+    public ResponseEntity<UsuarioDto> cadastrarUsuario(@RequestBody @Valid UsuarioDto dto, UriComponentsBuilder uriBuilder) {
+        UsuarioDto usuario = service.PostUsuario(dto);
+        URI uri = uriBuilder.path("/Usuario/{id}").buildAndExpand(usuario.getId()).toUri();
+
+
+
+        return ResponseEntity.created(uri).body(usuario);
     }
 
     @PutMapping("/{id}")
