@@ -7,10 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 import ts.juniors.rebook.dto.UsuarioDto;
 import ts.juniors.rebook.dto.UsuarioInsertDto;
+import ts.juniors.rebook.dto.UsuarioLoginDto;
+import ts.juniors.rebook.infra.security.JwtTokenDto;
+import ts.juniors.rebook.infra.security.TokenService;
+import ts.juniors.rebook.model.Usuario;
 import ts.juniors.rebook.service.UsuarioService;
 
 import java.net.URI;
@@ -23,6 +29,12 @@ public class UsuarioController {
     @Autowired
     private UsuarioService service;
 
+    @Autowired
+    private AuthenticationManager manager;
+
+    @Autowired
+    private TokenService tokenService;
+
     @GetMapping
     public Page<UsuarioDto> listarUsuarios(@PageableDefault(size = 10) Pageable paginacao) {
         return service.GetTodosUsuarios(paginacao);
@@ -33,7 +45,15 @@ public class UsuarioController {
         UsuarioDto dto = service.GetPorId(id);
         return ResponseEntity.ok(dto);
     }
+    @PostMapping("/login")
+    public ResponseEntity efetuarLogin(@RequestBody @Valid UsuarioLoginDto dto) {
+        var authenticationToken = new UsernamePasswordAuthenticationToken(dto.email(), dto.senha());
+        var authentication = manager.authenticate(authenticationToken);
 
+        var tokenJWT = tokenService.gerarToken((Usuario) authentication.getPrincipal());
+
+        return ResponseEntity.ok(new JwtTokenDto(tokenJWT));
+    }
     @PostMapping
     public ResponseEntity<UsuarioInsertDto> cadastrarUsuario(@RequestBody @Valid UsuarioInsertDto dto, UriComponentsBuilder uriBuilder) {
         UsuarioInsertDto usuario = service.PostUsuario(dto);
