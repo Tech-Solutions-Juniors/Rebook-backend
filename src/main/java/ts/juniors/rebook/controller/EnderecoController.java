@@ -17,7 +17,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/Endereco")
+@RequestMapping("/endereco")
 public class EnderecoController {
 
     @Autowired
@@ -37,7 +37,7 @@ public class EnderecoController {
     @PostMapping
     public ResponseEntity<EnderecoDTO> cadastrarEndereco(@RequestBody @Valid EnderecoDTO dto, UriComponentsBuilder uriBuilder) {
         EnderecoDTO endereco = service.postEndereco(dto);
-        URI uri = uriBuilder.path("/Endereco/{id}").buildAndExpand(endereco.getId()).toUri();
+        URI uri = uriBuilder.path("/endereco/{id}").buildAndExpand(endereco.getId()).toUri();
 
         return ResponseEntity.created(uri).body(endereco);
     }
