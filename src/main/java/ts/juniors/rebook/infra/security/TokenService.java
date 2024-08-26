@@ -44,6 +44,22 @@ public class TokenService {
         }
     }
 
+    public Long getUserIdFromToken(String tokenJWT) {
+        try {
+            var algoritmo = Algorithm.HMAC256("12345");
+            return JWT.require(algoritmo)
+                    .withIssuer("API Rebook")
+                    .build()
+                    .verify(tokenJWT)
+                    .getClaim("id").asLong();
+        } catch (JWTVerificationException exception) {
+            throw new RuntimeException("Token JWT inválido ou expiradinho!");
+        }
+    }
+
+
+
+
     private Instant dataExpiracao() {
         return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
     }

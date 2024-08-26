@@ -9,6 +9,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 import ts.juniors.rebook.dto.UsuarioDto;
@@ -63,16 +65,25 @@ public class UsuarioController {
 
         return ResponseEntity.created(uri).body(usuario);
     }
-
     @PutMapping("/{id}")
-    public ResponseEntity<UsuarioDto> atualizarUsuario(@PathVariable @NotNull Long id, @RequestBody @Valid UsuarioDto dto) {
-        UsuarioDto atualizado = service.PutUsuario(id, dto);
+    public ResponseEntity<UsuarioDto> atualizarUsuario(
+            @PathVariable @NotNull Long id,
+            @RequestBody @Valid UsuarioDto dto,
+            @RequestHeader("Authorization") String authHeader) {
+
+        String tokenJWT = authHeader.replace("Bearer ", "");
+
+        UsuarioDto atualizado = service.PutUsuario(id, dto, tokenJWT);
         return ResponseEntity.ok(atualizado);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<UsuarioDto> removerDeletar(@PathVariable @NotNull Long id) {
-        service.DeleteUsuario(id);
+        @DeleteMapping("/{id}")
+    public ResponseEntity<Void> removerDeletar(@PathVariable @NotNull Long id) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        service.DeleteUsuario(id, email); 
         return ResponseEntity.noContent().build();
     }
 }

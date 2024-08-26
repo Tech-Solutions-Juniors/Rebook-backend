@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import ts.juniors.rebook.dto.UsuarioDto;
 import ts.juniors.rebook.dto.UsuarioInsertDto;
+import ts.juniors.rebook.infra.security.TokenService;
 import ts.juniors.rebook.model.Livro;
 import ts.juniors.rebook.model.Usuario;
 import ts.juniors.rebook.repository.UsuarioRepository;
@@ -25,10 +26,15 @@ public class UsuarioService implements UserDetailsService {
 
     @Autowired
     private UsuarioRepository repository;
+
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private TokenService tokenService;
 
     private static Logger logger = LoggerFactory.getLogger(UsuarioService.class);
 
@@ -53,21 +59,25 @@ public class UsuarioService implements UserDetailsService {
         return modelMapper.map(usuario, UsuarioInsertDto.class);
     }
 
-    public UsuarioDto PutUsuario(Long id, UsuarioDto dto) {
+    public UsuarioDto PutUsuario(Long id, UsuarioDto dto, String tokenJWT) {
+        Long userIdFromToken = tokenService.getUserIdFromToken(tokenJWT);
+
+        if (!userIdFromToken.equals(id)) {
+            throw new SecurityException("Você não tem permissão para editar este usuário.");
+        }
+
+
         Usuario usuarioExistente = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
 
         usuarioExistente.setNome(dto.getNome());
         usuarioExistente.setEmail(dto.getEmail());
 
-        // Verificar se a lista de livros no dto não é nula
         if (dto.getLivros() != null) {
-            // Converter List<LivroDto> para List<Livro>
             List<Livro> livros = dto.getLivros().stream()
                     .map(livroDto -> modelMapper.map(livroDto, Livro.class))
                     .collect(Collectors.toList());
 
-            // Atualizar os livros do usuário
             usuarioExistente.getLivros().clear();
             usuarioExistente.getLivros().addAll(livros);
         }
@@ -76,7 +86,13 @@ public class UsuarioService implements UserDetailsService {
         return modelMapper.map(usuarioExistente, UsuarioDto.class);
     }
 
-    public void DeleteUsuario(Long id) {
+    public void DeleteUsuario(Long id, String token) {
+        Long userIdFromToken = tokenService.getUserIdFromToken(token);
+
+        if (!id.equals(userIdFromToken)) {
+            throw new SecurityException("Usuário não autorizado a deletar este perfil");
+        }
+
         repository.deleteById(id);
     }
 
