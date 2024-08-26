@@ -32,13 +32,16 @@ public class LivroController {
         return ResponseEntity.ok(dto);
     }
 
-    @PostMapping
+   @PostMapping
     public ResponseEntity<LivroDto> cadastrarLivro(@RequestBody @Valid LivroDto dto, UriComponentsBuilder uriBuilder) {
         LivroDto livro = service.PostLivro(dto);
         URI uri = uriBuilder.path("/livro/{id}").buildAndExpand(livro.getId()).toUri();
 
         return ResponseEntity.created(uri).body(livro);
+
+        // PRECISA SER FEITO O TESTE DO CADASTAR LIVRO
     }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<LivroDto> atualizarLivro(@PathVariable @NotNull Long id, @RequestBody @Valid LivroDto dto) {

@@ -39,9 +39,9 @@ public class UsuarioController {
         UsuarioInsertDto usuario = service.PostUsuario(dto);
         URI uri = uriBuilder.path("/usuario/{id}").buildAndExpand(usuario.getId()).toUri();
 
-
-
         return ResponseEntity.created(uri).body(usuario);
+
+        // FAZER TESTE - NÃO CONSEGUI
     }
 
     @PutMapping("/{id}")
