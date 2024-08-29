@@ -2,7 +2,9 @@ package ts.juniors.rebook.domain.entity;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -58,7 +60,7 @@ public class Livro {
     @Column(name = "autor", nullable = false)
     private String autor;
 
-    @NotBlank
+
     @Column(name = "preco", nullable = false)
     private BigDecimal preco;
 
