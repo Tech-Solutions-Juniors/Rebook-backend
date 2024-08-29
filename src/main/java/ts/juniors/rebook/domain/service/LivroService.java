@@ -7,7 +7,7 @@ import ts.juniors.rebook.domain.dto.LivroDto;
 public interface LivroService {
     Page<LivroDto> getTodosLivros(Pageable paginacao);
     LivroDto getPorId(Long id);
-    LivroDto postLivro(LivroDto dto);
+    LivroDto postLivro(LivroDto dto, String tokenJWT);
     LivroDto putLivro(Long id, LivroDto dto);
     void deleteLivro(Long id);
 }

@@ -35,8 +35,13 @@ public class LivroController {
     }
 
     @PostMapping
-    public ResponseEntity<LivroDto> cadastrarLivro(@RequestBody @Valid LivroDto dto, UriComponentsBuilder uriBuilder) {
-        LivroDto livro = service.postLivro(dto);
+    public ResponseEntity<LivroDto> cadastrarLivro(
+            @RequestBody @Valid LivroDto dto,
+            UriComponentsBuilder uriBuilder,
+            @RequestHeader("Authorization") String authHeader) {
+
+        String tokenJWT = authHeader.replace("Bearer ", "");
+        LivroDto livro = service.postLivro(dto, tokenJWT);
         URI uri = uriBuilder.path("/livros/{id}").buildAndExpand(livro.getId()).toUri();
         return ResponseEntity.created(uri).body(livro);
     }
