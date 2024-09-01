@@ -1,5 +1,6 @@
 package ts.juniors.rebook.application.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import java.net.URI;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/livros")
+@SecurityRequirement(name = "bearer-key")
 public class LivroController {
 
 

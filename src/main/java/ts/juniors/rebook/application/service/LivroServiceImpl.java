@@ -3,7 +3,6 @@ package ts.juniors.rebook.application.service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,10 +23,8 @@ public class LivroServiceImpl implements LivroService {
 
 
     private final LivroRepository repository;
-
     private final UsuarioRepository usuarioRepository;
     private final ModelMapper modelMapper;
-
     private final TokenService tokenService;
 
     @Override
