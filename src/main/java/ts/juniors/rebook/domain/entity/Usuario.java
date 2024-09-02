@@ -23,7 +23,7 @@ public class Usuario {
     @JoinColumn(name = "login_id", referencedColumnName = "id")
     private Login login;
 
-    @NotBlank(message = "Insira um nome")
+
     @Column(name = "nome", nullable = false)
     private String nome;
 

@@ -98,11 +98,9 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
             usuarioExistente.getLivros().addAll(livros);
         }
 
-        // Salvar as alterações nas duas entidades
         loginRepository.save(loginExistente);
         usuarioRepository.save(usuarioExistente);
 
-        // Mapear de volta para o DTO e retornar a resposta
         UsuarioDto usuarioAtualizadoDto = modelMapper.map(usuarioExistente, UsuarioDto.class);
         return new ResponseEntity<>(usuarioAtualizadoDto, HttpStatus.OK);
     }

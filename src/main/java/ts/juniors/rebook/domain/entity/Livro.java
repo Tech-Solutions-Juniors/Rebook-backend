@@ -27,11 +27,9 @@ public class Livro {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private long id;
 
-    @NotBlank
     @Column(name = "titulo", nullable = false)
     private String titulo;
 
-    @NotBlank
     @Column(name = "descricao", nullable = false)
     private String descricao;
 
@@ -49,14 +47,11 @@ public class Livro {
     @Size(max = 1)
     private List<Estados> estados;
 
-
     @ElementCollection
     @CollectionTable(name = "Livro_Imagens", joinColumns = @JoinColumn(name = "livro_id"))
     @Column(name = "imagem_url")
-    @Size(max = 3, message = "Você pode adicionar no máximo 3 imagens")
     private Set<String> imagemUrls;
 
-    @NotBlank
     @Column(name = "autor", nullable = false)
     private String autor;
 

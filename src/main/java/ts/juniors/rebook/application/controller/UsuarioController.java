@@ -51,7 +51,6 @@ public class UsuarioController {
         var authenticationToken = new UsernamePasswordAuthenticationToken(dto.email(), dto.senha());
         var authentication = manager.authenticate(authenticationToken);
 
-        // Aqui, `Login` é usado em vez de `Usuario`
         var tokenJWT = tokenService.gerarToken((Login) authentication.getPrincipal());
 
         return ResponseEntity.ok(new JwtTokenDto(tokenJWT));

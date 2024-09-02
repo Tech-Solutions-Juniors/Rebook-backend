@@ -24,12 +24,11 @@ public class Login implements UserDetails, Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Favor entrar um email válido")
-    @Email(message = "Favor entrar um email válido")
+
     @Column(name = "email", unique = true, nullable = false)
     private String email;
 
-    @NotBlank(message = "digite uma senha")
+
     @Column(name = "senha", nullable = false)
     private String senha;
 
