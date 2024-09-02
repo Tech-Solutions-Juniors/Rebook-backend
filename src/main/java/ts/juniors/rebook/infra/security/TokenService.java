@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.springframework.stereotype.Service;
+import ts.juniors.rebook.domain.entity.Login;
 import ts.juniors.rebook.domain.entity.Usuario;
 
 import java.time.Instant;
@@ -16,13 +17,13 @@ public class TokenService {
 
 
 
-    public String gerarToken(Usuario usuario) {
+    public String gerarToken(Login login) {
         try {
             var algoritmo = Algorithm.HMAC256("12345");
             return JWT.create()
                     .withIssuer("API Rebook")
-                    .withSubject(usuario.getEmail())
-                    .withClaim("id", usuario.getId())
+                    .withSubject(login.getEmail())
+                    .withClaim("id", login.getId())
                     .withExpiresAt(dataExpiracao())
                     .sign(algoritmo);
         } catch (JWTCreationException exception){
@@ -52,7 +53,7 @@ public class TokenService {
                     .verify(tokenJWT)
                     .getClaim("id").asLong();
         } catch (JWTVerificationException exception) {
-            throw new RuntimeException("Token JWT inválido ou expiradinho!");
+            throw new RuntimeException("Token JWT inválido ou expirado!!");
         }
     }
 
