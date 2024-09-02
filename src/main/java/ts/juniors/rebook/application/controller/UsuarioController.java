@@ -18,6 +18,7 @@ import ts.juniors.rebook.application.service.UsuarioServiceImpl;
 import ts.juniors.rebook.domain.dto.UsuarioDto;
 import ts.juniors.rebook.domain.dto.UsuarioInsertDto;
 import ts.juniors.rebook.domain.dto.UsuarioLoginDto;
+import ts.juniors.rebook.domain.entity.Login;
 import ts.juniors.rebook.infra.security.JwtTokenDto;
 import ts.juniors.rebook.infra.security.TokenService;
 import ts.juniors.rebook.domain.entity.Usuario;
@@ -32,9 +33,7 @@ import java.net.URI;
 public class UsuarioController {
 
     private final UsuarioServiceImpl service;
-
     private final AuthenticationManager manager;
-
     private final TokenService tokenService;
 
     @GetMapping
@@ -52,7 +51,7 @@ public class UsuarioController {
         var authenticationToken = new UsernamePasswordAuthenticationToken(dto.email(), dto.senha());
         var authentication = manager.authenticate(authenticationToken);
 
-        var tokenJWT = tokenService.gerarToken((Usuario) authentication.getPrincipal());
+        var tokenJWT = tokenService.gerarToken((Login) authentication.getPrincipal());
 
         return ResponseEntity.ok(new JwtTokenDto(tokenJWT));
     }

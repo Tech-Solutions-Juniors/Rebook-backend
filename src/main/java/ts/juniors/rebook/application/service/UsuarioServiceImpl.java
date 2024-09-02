@@ -15,6 +15,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import ts.juniors.rebook.domain.dto.UsuarioDto;
 import ts.juniors.rebook.domain.dto.UsuarioInsertDto;
+import ts.juniors.rebook.domain.entity.Login;
+import ts.juniors.rebook.domain.repository.LoginRepository;
 import ts.juniors.rebook.domain.service.UsuarioService;
 import ts.juniors.rebook.infra.security.TokenService;
 import ts.juniors.rebook.domain.entity.Livro;
@@ -22,13 +24,15 @@ import ts.juniors.rebook.domain.entity.Usuario;
 import ts.juniors.rebook.domain.repository.UsuarioRepository;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
 
-    private final UsuarioRepository repository;
+    private final UsuarioRepository usuarioRepository;
+    private final LoginRepository loginRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
     private final TokenService tokenService;
@@ -36,14 +40,14 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
 
     @Override
     public ResponseEntity<Page<UsuarioDto>> getTodosUsuarios(Pageable paginacao) {
-        Page<UsuarioDto> usuarios = repository.findAll(paginacao)
+        Page<UsuarioDto> usuarios = usuarioRepository.findAll(paginacao)
                 .map(usuario -> modelMapper.map(usuario, UsuarioDto.class));
         return new ResponseEntity<>(usuarios, HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<UsuarioDto> getPorId(Long id) {
-        Usuario usuario = repository.findById(id)
+        Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
         UsuarioDto usuarioDto = modelMapper.map(usuario, UsuarioDto.class);
         return new ResponseEntity<>(usuarioDto, HttpStatus.OK);
@@ -52,13 +56,21 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
     @Override
     public ResponseEntity<UsuarioInsertDto> postUsuario(UsuarioInsertDto dto) {
         Usuario usuario = modelMapper.map(dto, Usuario.class);
-        usuario.setSenha(passwordEncoder.encode(dto.getSenha()));
-        usuario = repository.save(usuario);
+
+        Login login = new Login();
+        login.setEmail(dto.getEmail());
+        login.setSenha(passwordEncoder.encode(dto.getSenha()));
+
+        usuario.setLogin(login);
+        login.setUsuario(usuario);
+
+        usuario = usuarioRepository.save(usuario);
+
         UsuarioInsertDto usuarioDto = modelMapper.map(usuario, UsuarioInsertDto.class);
         return new ResponseEntity<>(usuarioDto, HttpStatus.CREATED);
     }
 
-    @Override
+        @Override
     public ResponseEntity<UsuarioDto> putUsuario(Long id, UsuarioDto dto, String tokenJWT) {
         Long userIdFromToken = tokenService.getUserIdFromToken(tokenJWT);
 
@@ -66,11 +78,16 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
             throw new SecurityException("Você não tem permissão para editar este usuário.");
         }
 
-        Usuario usuarioExistente = repository.findById(id)
+        Login loginExistente = loginRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Login não encontrado"));
+
+        Usuario usuarioExistente = usuarioRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
 
+
+        loginExistente.setEmail(dto.getEmail());
+
         usuarioExistente.setNome(dto.getNome());
-        usuarioExistente.setEmail(dto.getEmail());
 
         if (dto.getLivros() != null) {
             List<Livro> livros = dto.getLivros().stream()
@@ -81,7 +98,9 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
             usuarioExistente.getLivros().addAll(livros);
         }
 
-        usuarioExistente = repository.save(usuarioExistente);
+        loginRepository.save(loginExistente);
+        usuarioRepository.save(usuarioExistente);
+
         UsuarioDto usuarioAtualizadoDto = modelMapper.map(usuarioExistente, UsuarioDto.class);
         return new ResponseEntity<>(usuarioAtualizadoDto, HttpStatus.OK);
     }
@@ -94,19 +113,20 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
             throw new SecurityException("Usuário não autorizado a deletar este perfil");
         }
 
-        repository.deleteById(id);
+
+        loginRepository.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        Usuario usuario = repository.findByEmail(username);
-        if (usuario == null) {
+        Login login = loginRepository.findByEmail(username);
+        if (login == null) {
             logger.error("User not found: " + username);
             throw new UsernameNotFoundException("Email not found");
         }
         logger.info("User found: " + username);
-        return usuario;
+        return login;
     }
 }

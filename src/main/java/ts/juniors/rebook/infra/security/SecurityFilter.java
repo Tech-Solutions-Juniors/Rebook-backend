@@ -5,12 +5,13 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import ts.juniors.rebook.domain.repository.UsuarioRepository;
+import ts.juniors.rebook.domain.repository.LoginRepository;
+
 
 import java.io.IOException;
 
@@ -22,7 +23,7 @@ public class SecurityFilter extends OncePerRequestFilter {
     private final TokenService tokenService;
 
 
-    private final UsuarioRepository repository;
+    private final LoginRepository repository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -30,9 +31,9 @@ public class SecurityFilter extends OncePerRequestFilter {
 
         if (tokenJWT != null) {
             var subject = tokenService.getSubject(tokenJWT);
-            var usuario = repository.findByEmail(subject);
+            var login = repository.findByEmail(subject);
 
-            var authentication = new UsernamePasswordAuthenticationToken(usuario, null, usuario.getAuthorities());
+            var authentication = new UsernamePasswordAuthenticationToken(login, null, login.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
