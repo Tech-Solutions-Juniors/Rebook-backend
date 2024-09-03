@@ -35,6 +35,10 @@ public class Login implements UserDetails, Serializable {
     @OneToOne(mappedBy = "login", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Usuario usuario;
 
+
+    @OneToOne(mappedBy = "livro", cascade = CascadeType.ALL)
+    private Transacao transacao;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN"));
