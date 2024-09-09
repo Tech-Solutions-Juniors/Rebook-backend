@@ -1,6 +1,8 @@
 package ts.juniors.rebook.domain.dto;
 
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,7 +13,15 @@ import lombok.Setter;
 @Setter
 public class UsuarioInsertDto extends UsuarioDto {
 
-    @NotBlank(message = "digite uma senha")
+    @NotBlank(message = "Senha é obrigatória")
+    @Size(min = 8, message = "A senha deve ter no mínimo 8 caracteres")
     private String senha;
+    @NotBlank(message = "Confirmação de senha é obrigatória")
+    private String confirmacaoSenha;
 
+
+    @AssertTrue(message = "As senhas não correspondem")
+    public boolean isSenhasIguais() {
+        return senha != null && senha.equals(confirmacaoSenha);
+    }
 }
