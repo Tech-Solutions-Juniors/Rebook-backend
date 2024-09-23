@@ -36,8 +36,6 @@ public class Login implements UserDetails, Serializable {
     private Usuario usuario;
 
 
-    @OneToOne(mappedBy = "livro", cascade = CascadeType.ALL)
-    private Transacao transacao;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

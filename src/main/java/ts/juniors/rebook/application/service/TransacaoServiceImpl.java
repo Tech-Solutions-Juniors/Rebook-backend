@@ -9,11 +9,9 @@ import org.springframework.stereotype.Service;
 import ts.juniors.rebook.domain.dto.TransacaoDto;
 import ts.juniors.rebook.domain.entity.Transacao;
 import ts.juniors.rebook.domain.entity.Usuario;
-import ts.juniors.rebook.domain.repository.LoginRepository;
 import ts.juniors.rebook.domain.repository.TransacaoRepository;
 import ts.juniors.rebook.domain.repository.UsuarioRepository;
 import ts.juniors.rebook.domain.service.TransacaoService;
-import ts.juniors.rebook.domain.service.UsuarioService;
 import ts.juniors.rebook.infra.security.TokenService;
 
 @Service
@@ -33,7 +31,7 @@ public class TransacaoServiceImpl implements TransacaoService {
     @Override
     public TransacaoDto getTransacaoporID(long id) {
         Transacao transacao = repository.findById(id)
-                .orElseThrow(()-> new EntityNotFoundException());
+                .orElseThrow(EntityNotFoundException::new);
 
         return mapper.map(transacao,TransacaoDto.class) ;
     }

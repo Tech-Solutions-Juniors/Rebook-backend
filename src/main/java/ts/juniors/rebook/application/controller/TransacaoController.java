@@ -44,7 +44,7 @@ public class TransacaoController {
     @PutMapping("/{id}")
     public ResponseEntity<TransacaoDto> atualizarTransacao(@PathVariable @NotNull Long id,@RequestBody @Valid TransacaoDto dto){
         TransacaoDto atualizado = service.putTransacao(dto,id);
-       return ResponseEntity.ok(atualizado);
+        return ResponseEntity.ok(atualizado);
     }
 
     @DeleteMapping("/{id}")

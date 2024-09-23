@@ -62,4 +62,13 @@ public class Livro {
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
+
+    @OneToOne
+    @JoinColumn(name = "transacao_id")
+    private Transacao transacao;
+
+    @ManyToOne
+    @JoinColumn(name = "carrinho_id")
+    private Carrinho carrinho;
+
 }

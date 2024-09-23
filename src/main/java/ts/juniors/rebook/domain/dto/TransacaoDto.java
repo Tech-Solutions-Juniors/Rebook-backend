@@ -16,9 +16,9 @@ public class TransacaoDto {
 
     private long id;
 
-    private Livro livro;
+    private LivroDto livro;
 
-    private Usuario usuario;
+    private UsuarioDto usuario;
 
     private PagamentoDto pagamentoDto;
 

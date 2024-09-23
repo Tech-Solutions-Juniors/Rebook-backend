@@ -4,9 +4,6 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
-
-
-
 @Getter
 @Setter
 public class UsuarioInsertDto extends UsuarioDto {

@@ -4,7 +4,6 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
-import ts.juniors.rebook.domain.entity.Transacao;
 import ts.juniors.rebook.domain.enums.FormaPagamento;
 import ts.juniors.rebook.domain.enums.Status;
 import java.time.LocalDateTime;
@@ -18,10 +17,11 @@ public class PagamentoDto {
     //private ExternalId pagamentoApiID;
 
     private Float valor;
+
     @Enumerated(EnumType.STRING)
     private FormaPagamento formaPagamento;
 
-    private Transacao transacao;
+    private TransacaoDto transacao;
 
     @Enumerated(EnumType.STRING)
     private Status status;

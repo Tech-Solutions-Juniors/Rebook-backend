@@ -23,7 +23,6 @@ public class Usuario {
     @JoinColumn(name = "login_id", referencedColumnName = "id")
     private Login login;
 
-
     @Column(name = "nome", nullable = false)
     private String nome;
 
@@ -33,8 +32,11 @@ public class Usuario {
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Endereco> enderecos = new HashSet<>();
 
-    @OneToMany(mappedBy = "uruario",cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "usuario",cascade = CascadeType.ALL,orphanRemoval = true)
     private Set<Transacao> transaçoes = new HashSet<>();
+
+    @OneToOne(mappedBy = "usuario",cascade = CascadeType.ALL,orphanRemoval = true)
+    private Carrinho carrinho;
 
     // Método para obter o ID do usuário
     public Long getId() {
