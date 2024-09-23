@@ -1,7 +1,7 @@
 package ts.juniors.rebook.domain.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+
 import lombok.*;
 
 import java.util.*;
@@ -33,7 +33,6 @@ public class Usuario {
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Endereco> enderecos = new HashSet<>();
 
-    // Método para obter o ID do usuário
     public Long getId() {
         return login != null ? login.getId() : null;
     }
