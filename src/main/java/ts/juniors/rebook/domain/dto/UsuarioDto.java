@@ -26,4 +26,6 @@ public class UsuarioDto {
     private List<LivroDto> livros;
 
     private List<EnderecoDto> enderecos;
+
+    private List<TransacaoDto> transacao;
 }

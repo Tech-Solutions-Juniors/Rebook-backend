@@ -33,5 +33,6 @@ public class LivroDto {
     @Size(max = 3, message = "Você pode adicionar no máximo 3 imagens")
     private Set<String> imagemUrls;
     private String autor;
+    private TransacaoDto transacao;
     private Long usuarioId;
 }
