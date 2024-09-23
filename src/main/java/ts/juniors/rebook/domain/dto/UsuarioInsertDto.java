@@ -17,11 +17,11 @@ public class UsuarioInsertDto extends UsuarioDto {
     @Size(min = 8, message = "A senha deve ter no mínimo 8 caracteres")
     private String senha;
     @NotBlank(message = "Confirmação de senha é obrigatória")
-    private String confirmacaoSenha;
+    private String confirmacaosenha;
 
 
     @AssertTrue(message = "As senhas não correspondem")
     public boolean isSenhasIguais() {
-        return senha != null && senha.equals(confirmacaoSenha);
+        return senha != null && senha.equals(confirmacaosenha);
     }
 }
